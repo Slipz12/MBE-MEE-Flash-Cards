@@ -1,0 +1,2212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#151618">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bar Prep">
+<title>Bar Prep Flashcards</title>
+<style>
+  :root {
+    --bg: #151618;
+    --surface: #1e2024;
+    --surface-2: #262930;
+    --border: #2e323a;
+    --border-strong: #3a3e47;
+    --text: #E8E5DE;
+    --text-dim: #9a9ba4;
+    --text-faint: #62646d;
+    --accent: #d4a860;      /* muted amber — star */
+    --flag: #c46a5a;        /* muted red-orange — flag */
+    --focus: #6b8fb5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior: none;
+  }
+  #app {
+    min-height: 100dvh;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Screen frame */
+  .screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 20px 24px;
+    max-width: 640px;
+    margin: 0 auto;
+    width: 100%;
+    min-height: 0;
+  }
+  .top-bar {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    min-height: 36px;
+  }
+  .top-bar h1 {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .top-bar .left { justify-self: start; }
+  .top-bar .right { justify-self: end; }
+  .link-btn {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 14px;
+    padding: 8px 4px;
+    cursor: pointer;
+    font-family: inherit;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .link-btn:hover { color: var(--text); }
+  .link-btn:active { color: var(--text); }
+
+  /* Home page title */
+  .page-title {
+    font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    margin: 8px 0 4px;
+  }
+  .page-subtitle {
+    color: var(--text-dim);
+    font-size: 14px;
+    margin-bottom: 28px;
+  }
+
+  /* Section headers and lists */
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin: 4px 4px 10px;
+    font-weight: 600;
+  }
+  .list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 28px; }
+  .list-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 15px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    cursor: pointer;
+    color: var(--text);
+    font-family: inherit;
+    text-align: left;
+    width: 100%;
+    transition: background 0.12s, border-color 0.12s;
+  }
+  .list-item:hover { background: var(--surface-2); border-color: var(--border-strong); }
+  .list-item:active { background: var(--surface-2); }
+  .list-item.disabled {
+    opacity: 0.4;
+    cursor: default;
+    pointer-events: none;
+  }
+  .list-item .name { font-size: 15px; font-weight: 500; }
+  .list-item .count { font-size: 13px; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+
+  /* Card view */
+  .card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    font-size: 13px;
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+    min-height: 20px;
+  }
+  .subject-tag {
+    color: var(--accent);
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .card-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 1200px;
+    padding: 4px 0;
+    min-height: 0;
+  }
+  .card {
+    position: relative;
+    width: 100%;
+    height: min(58dvh, 480px);
+    transform-style: preserve-3d;
+    transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .card.flipped { transform: rotateY(180deg); }
+  .card-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 32px 26px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .card-front {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  .card-back {
+    transform: rotateY(180deg);
+    justify-content: flex-start;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .term {
+    font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+    font-size: clamp(24px, 5.5vw, 34px);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    color: var(--text);
+  }
+  .back-content {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+  }
+  .back-item {
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: var(--text);
+    padding-left: 20px;
+    position: relative;
+  }
+  .back-item::before {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 0.75em;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--text-faint);
+  }
+  .back-item strong { font-weight: 600; color: var(--text); }
+  .back-item em { font-style: italic; color: var(--text); }
+  .flip-hint {
+    position: absolute;
+    bottom: 14px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 10px;
+    color: var(--text-faint);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    pointer-events: none;
+  }
+
+  /* Action bar */
+  .action-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .action-group { display: flex; gap: 8px; }
+  .icon-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-family: inherit;
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+  }
+  .icon-btn:hover { background: var(--surface-2); color: var(--text); }
+  .icon-btn.active[data-role="star"] {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  }
+  .icon-btn.active[data-role="flag"] {
+    color: var(--flag);
+    border-color: var(--flag);
+    background: color-mix(in srgb, var(--flag) 10%, var(--surface));
+  }
+  .nav-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    min-height: 44px;
+    font-weight: 500;
+    font-family: inherit;
+    transition: background 0.12s, border-color 0.12s;
+  }
+  .nav-btn:hover { background: var(--surface-2); border-color: var(--border-strong); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+  /* Empty state */
+  .empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex: 1;
+    color: var(--text-dim);
+    padding: 40px 20px;
+    gap: 12px;
+  }
+  .empty .empty-title {
+    color: var(--text);
+    font-size: 16px;
+    font-weight: 500;
+  }
+  .empty p {
+    max-width: 320px;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  /* Focus */
+  button:focus-visible, .list-item:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+  @media (max-width: 400px) {
+    .screen { padding: 16px 16px 20px; }
+    .card-face { padding: 26px 20px; }
+    .icon-btn { padding: 10px 12px; font-size: 13px; }
+    .nav-btn { padding: 10px 14px; font-size: 13px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card { transition: none; }
+    .list-item, .icon-btn, .nav-btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// ============================================================
+// CARD DATA
+// Format: each entry becomes one card.
+//   subject: which deck the card lives in
+//   front:   the term shown on the front
+//   back:    array of strings — each becomes a bullet on the back
+//            (from the "o" sub-bullets in the Themis outline)
+// New sets can be appended to RAW_CARDS as they're built out.
+// ============================================================
+const SUBJECTS = [
+  "Evidence",
+  "Civil Procedure",
+  "Constitutional Law",
+  "Contracts",
+  "Torts",
+  "Real Property",
+  "Criminal Law & Procedure",
+  "Business Associations"
+];
+
+const RAW_CARDS = [
+  {
+    subject: "Evidence",
+    front: "Relevance",
+    back: [
+      "Evidence must probative (tending to make a fact more or less probable) and",
+      "Must be material (not necessarily conclusive, but to a fact at issue)"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "403 Exclusion",
+    back: [
+      "Court may exclude relevant evidence if its probative value is substantially outweighed by a danger of unfair prejudice, confusing the issues or misleading the jury, or causing unnecessary delay/presentation of cumulative evidence"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Character Evidence Generally",
+    back: [
+      "Evidence of an individual’s character trait when offered to show action in conformity therewith",
+      "Generally inadmissible, almost always inadmissible in civil",
+      "May come in via exception, or for non-character purpose (impeachment, 404b, etc.)"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Character Evidence in a Criminal Case",
+    back: [
+      "Defendant may offer evidence of their own pertinent trait (trait at issue) and if they do, the door is opened",
+      "Prosecution may then rebut by offering contrary character evidence",
+      "Defendant may offer evidence of victim’s pertinent trait, allowing prosecution to rehabilitate or offer evidence that the Defendant has the same trait",
+      "In homicide case – prosecution may offer evidence of witness character for peacefulness if alleged to be first aggressor"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Specific Acts Evidence (404b)",
+    back: [
+      "Specific act evidence is inadmissible to show action in conformity, but may be admissible for another purpose, such as MOIPPKIAL",
+      "*[flag: MIMIC acronym conflates \"plan\" with \"common scheme\"; rule text is motive/opportunity/intent/preparation/plan/knowledge/identity/absence of mistake/lack of accident]*"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Proving Character",
+    back: [
+      "Can be done via reputation or opinion testimony",
+      "Generally not permitted to use extrinsic evidence to prove a specific act if inquired about under 405a – need GF basis and bound by witness response"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Habit",
+    back: [
+      "Evidence of individual’s habit may be admissible to show action in conformity if there is foundation showing routine repetition to specific stimuli"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Competence",
+    back: [
+      "Must be competent to testify – if a child, requires knowing value of telling truth",
+      "Must testify based on personal knowledge"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Lay Opinions",
+    back: [
+      "Must be rationally based on perception of witness and",
+      "Helpful to a clear understanding of the witness testimony or determination of fact in issue",
+      "Not based on scientific, technical, or specialized knowledge"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Expert Qualification/Testimony",
+    back: [
+      "Expert testimony must concern scientific, technical, or other specialized knowledge (reliable) and be helpful to the trier of fact (relevant)",
+      "Must be qualified as expert by knowledge/skill/experience/training/education",
+      "testimony based on sufficient facts or data",
+      "testimony is product of reliable principles and methods",
+      "Witness applied those principles and methods reliably to the facts"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Basis for Expert Opinion",
+    back: [
+      "Outside of personal observations, must be based upon what other experts in field would reasonable rely upon",
+      "even if those are inadmissible, they may be shown to jury if probative value substantially outweighs prejudicial effect",
+      "May state opinion without first testifying as to basis of the opinion"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Past Recollection Refreshed",
+    back: [
+      "Witness has trouble remembering something, may help by showing them document (or other item) to refresh",
+      "If they proceed to testify from memory after refreshing – it’s refreshed and allowed"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Past Recollection Recorded",
+    back: [
+      "Hearsay exception and parallel to recollection refreshed",
+      "Witness cannot remember after testifying to lack of memory, AND attempted refresh – may then read the notes into evidence if the record made while fresh in witness memory and record is accurate reflection thereof",
+      "Does not need to be regularly kep",
+      "Not admitted directly into evidence unless demanded by adverse party as exhibit"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Character for Truthfulness",
+    back: [
+      "Testifying witness character can be attacked by reputation or opinion testimony as to that witnesses character for dishonesty"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Impeachment via Specific Acts",
+    back: [
+      "On cross examination, a witnesses character can be impeached for its truthfulness by reference to the specific acts of that witness, or if they are testifying in support of a party’s character, to the specific acts of that party",
+      "No extrinsic is permitted to prove, requires GF basis, bound by witness response"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Criminal Convictions <10 Years",
+    back: [
+      "Automatically admissible to impeach if a non-felony, but where the convictions involves proving elements of dishonesty or false statements",
+      "If a felony or punishable by more than 1 year in prison, then admissible against a criminal Defendant if the probative value outweighs the prejudicial effect AT ALL, and versus all other witnesses (including civil defendant), admissible unless the adverse party shows the prejudicial effect substantially outweighs its probative value"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Criminal Conviction >10 years",
+    back: [
+      "Admissible if probative value substantially outweighs prejudicial effect and",
+      "Proponent gives adverse party reasonable written notice of intent to use"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Criminal Conviction Evidence Timing",
+    back: [
+      "Note that the timing runs from conviction OR from release, whichever is LATER"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Juvenile Convictions",
+    back: [
+      "Admissible only if it would be admissible against the witness if they were of the age of majority and it is essential to the case"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Prior Inconsistent Statements",
+    back: [
+      "Evidence of PIS may be used for impeachment purposes regardless of whether it is hearsay",
+      "Witness needs a chance to explain or deny the statement first before it can be proven via extrinsic",
+      "May also be admissible substantively if the PIS hearsay exception, or another hearsay exception, applies (made under oath while adverse party had opportunity and similar motive to cross-examine)"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Bias/Interest/Sensory Competence",
+    back: [
+      "All valid basis for impeachment",
+      "May use extrinsic to prove all of them"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Impeachment by Contradiction",
+    back: [
+      "Allowed to use extrinsic evidence to impeach by contradiction unless it would be to a collateral matter (trial within a trial)"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Rehabilitation",
+    back: [
+      "Once a witness character has been attacked for truthfulness, it may be rehabilitated"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Authentication Generally",
+    back: [
+      "Threshold requirement for the court to determine whether there is sufficient evidence for jury to determine that the item is authentic – not that it IS authentic"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Self-Authenticating Documents",
+    back: [
+      "Public docs with seal",
+      "Certified copies of punlic records",
+      "Official publications issued by public authority",
+      "Newspaper and periodical",
+      "Trade inscription",
+      "NOTARIZED DOCS",
+      "Commercial paper",
+      "Busienss records certified by custodian of records"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Handwriting",
+    back: [
+      "Authentication by expert is okay, or by lay witness if familiarity not obtained for purpose of litigation"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Photograph Auth",
+    back: [
+      "May be authenticated via personal knowledge that photo fairly and accurate depicts the item or object photographed"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "X-Ray/Machine Auth",
+    back: [
+      "Need to authenticate by showing that the process is accurate, machine working, operator was qualified and likely requires testimony to that end"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Best Evidence Rule Applies",
+    back: [
+      "When the content of an item of evidenceis at issue, or where a witness relies on the content of the document",
+      "Then we need the original to prove its contents absent an exception"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "BER Exceptions",
+    back: [
+      "All Ogs lost or destroyed but not by proponent acting in bad faith",
+      "OG cannot be obtained by any judicial process",
+      "Party against whom its offered had control of OG, was notice that it would be subject of proof, and failed to produce it at trial or hearing, or",
+      "Document is not closely related to controlling issue"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "BER Duplicates",
+    back: [
+      "May allow duplicated unless the authenticity is questioned or admission would be unfair"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "BER Public Records",
+    back: [
+      "Certified copy of public record or testimony from the recordkeeper + copy is sufficient"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Privileges and Diversity",
+    back: [
+      "If diversity, its state law – so may have doctor patient privilege"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Atty-Client",
+    back: [
+      "Applies to statements made for purposes of obtaining legal advice or counsel, applies to past, prospective, and current clients",
+      "Requires confidential communication – made with purpose of being confidential – not messed up because agent of attorney is present",
+      "Exception where the client later sues the attorney or where dual representation leads to clients suing each other"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Atty-Client Crime Fraud",
+    back: [
+      "Won’t apply if advise is used to carry out FUTURE crime or fraud"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Work Product",
+    back: [
+      "Protects attorney work product made in anticipation of litigation it is shown by the other party that disclosure is necessitated by substantial need for the info and that it can’t be obtained by any other means without undue hardship",
+      "Exception wont apply to mental impressions, conclusions, or trial strategy notes"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Inadvertent Waiver",
+    back: [
+      "Claw-Back exception, waiver unintentional despite efforts to maintain confidentiality + prompt efforts to correct",
+      "Will override state law even in diversity"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Doctor-Patient",
+    back: [
+      "Only in state law and won’t apply when patient places condition directly at issue in suit"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Psychotherapist-Patient Privilege",
+    back: [
+      "Wil apply but exception where disclosure is necessary to avoid threat of injury or harm to a specific person"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Spousal Testimonial Immunity",
+    back: [
+      "Allows spouse to refuse to testify against other spouse, applying during a valid marriage only – not before or after",
+      "Held by testifying spouse"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Confidential marital Communications",
+    back: [
+      "Survives divorce and death and will privilege communications made between spouses to a valid marriage",
+      "Either spouse holds, can prevent the other from disclosing",
+      "Exception where they sue each other"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "5A Priv Against Self Incrimination",
+    back: [
+      "Only allowed by natural person – not corporation – prevents person from being witness against themselves",
+      "Protects them from being compelled to make incriminating statements – applying anywhere",
+      "Won’t apply to physical mannerisms or characteristics (like blood samples)",
+      "But no risk of incrimination due to immunity invalidates this"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Hearsay Definition",
+    back: [
+      "Out of court statement offered to prove the truth of the matter asserted",
+      "Generally inadmissible unless it fits an exclusion or exception",
+      "Only assertive statements/conduct qualify"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Assertive Conduct",
+    back: [
+      "Nonverbal conduct intended as an assertion (pointing, nodding)",
+      "Treated as a statement for hearsay purposes",
+      "Nonassertive conduct (crying, running) is not hearsay unless intended to communicate"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Nonhearsay Use — Effect on Listener",
+    back: [
+      "Statement offered to show effect on the person who heard it (notice, warning, motive, fear)",
+      "Classic example: notice statement to defendant that his brakes are faulty"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Nonhearsay Use — State of Mind (circumstantial)",
+    back: [
+      "Statement offered as circumstantial evidence of declarant's state of mind, knowledge, or belief"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Nonhearsay Use — Legally Significant Verbal Act",
+    back: [
+      "Words that themselves have legal effect (offer, acceptance, defamation, gift, transfer)",
+      "The utterance itself is the operative fact, not proof of some external truth"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Nonhearsay Use — Impeachment",
+    back: [
+      "PIS offered only to impeach — not substantive",
+      "Becomes substantive only if it independently qualifies under 801(d)(1)(A) or an exception"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Double Hearsay",
+    back: [
+      "Hearsay within hearsay admissible only if each layer independently qualifies",
+      "Analyze each layer separately"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Prior Inconsistent Statement — Substantive",
+    back: [
+      "Testifying witness subject to current cross",
+      "Prior statement made under oath at a trial, hearing, deposition, or other proceeding",
+      "Substantively admissible, not just for impeachment"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Prior Consistent Statement",
+    back: [
+      "Testifying witness subject to current cross",
+      "Offered to rebut charge of recent fabrication/improper motive/influence and predates the alleged fabrication or motive",
+      "Also admissible to rehabilitate credibility on other grounds"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Prior Statement of Identification",
+    back: [
+      "Testifying witness subject to current cross",
+      "Identifies a person after perceiving them",
+      "Substantively admissible"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Opposing Party's Statement — Direct",
+    back: [
+      "Any statement by party opponent offered against them",
+      "Need not be against interest when made",
+      "No personal knowledge requirement"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Opposing Party's Statement — Adoptive",
+    back: [
+      "Party manifested belief in truth of the statement",
+      "Adopted expressly, by conduct, or by silence where denial would be expected"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Opposing Party's Statement — Vicarious/Agent",
+    back: [
+      "Made by employee/agent of party opponent",
+      "About matter within scope of employment relationship",
+      "While relationship existed",
+      "Also covers authorized speakers on party's behalf",
+      "[flag: matter within scope of employment relationship AND made during the relationship]"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Opposing Party's Statement — Co-conspirator",
+    back: [
+      "Made by co-conspirator of party opponent",
+      "During AND in furtherance of the conspiracy",
+      "[flag: completed conspiracy doesn't qualify — not in furtherance]"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Definition of Unavailability",
+    back: [
+      "Privilege claim",
+      "Refusal to testify despite court order",
+      "Lack of memory of the subject matter",
+      "Death or serious illness",
+      "Absent and proponent unable to procure attendance by process or reasonable means",
+      "Proponent cannot claim unavailability if they caused it"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Former Testimony",
+    back: [
+      "Given at prior trial, hearing, or deposition",
+      "Offered against party who had — or in civil case whose predecessor in interest had — opportunity and similar motive to develop via direct, cross, or redirect",
+      "[flag: opportunity AND similar motive; doesn't matter whether actually crossed]"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Dying Declaration",
+    back: [
+      "Made while declarant believed death was imminent",
+      "Concerns the cause or circumstances of what declarant believed to be impending death",
+      "Admissible in civil cases OR criminal homicide prosecutions only"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Statement Against Interest",
+    back: [
+      "So contrary to declarant's proprietary, pecuniary, penal, or civil interest at time made that reasonable person wouldn't have made it unless true",
+      "In criminal case, statement exposing declarant to criminal liability requires corroborating circumstances of trustworthiness",
+      "[flag: distinct from party admission; applies to any unavailable declarant]"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Statement of Personal or Family History",
+    back: [
+      "Declarant's own birth, adoption, marriage, ancestry, or similar family history",
+      "Or concerning another person if declarant was related or intimately associated with the family"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Statement Against Party Causing Unavailability (forfeiture)",
+    back: [
+      "Party engaged or acquiesced in wrongdoing intended to procure declarant's unavailability",
+      "Wrongdoing succeeded",
+      "Statement admissible against that party"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Present Sense Impression",
+    back: [
+      "Describes or explains an event or condition",
+      "Made while perceiving it or immediately after",
+      "Contemporaneity is the key"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Excited Utterance",
+    back: [
+      "Relates to a startling event or condition",
+      "Made while declarant was under stress of excitement caused by it",
+      "Focus on stress and spontaneity, not exact timing"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Statement of Mental/Emotional/Physical Condition",
+    back: [
+      "Then-existing state of mind, emotion, sensation, or physical condition",
+      "Cannot use statement of memory or belief to prove the fact remembered/believed (unless it relates to declarant's will)",
+      "Can prove future intent (Hillmon)"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Statement for Medical Diagnosis/Treatment",
+    back: [
+      "Made for and reasonably pertinent to medical diagnosis or treatment",
+      "Covers medical history, past/present symptoms, cause, or general character",
+      "Can be made to any person if for the purpose of diagnosis/treatment",
+      "[flag: fault statements generally excluded — not pertinent to treatment]"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Recorded Recollection",
+    back: [
+      "Matter witness once knew but cannot recall well enough to testify fully",
+      "Record made or adopted while fresh in witness's memory",
+      "Accurately reflects the witness's knowledge",
+      "Read into evidence; admitted as exhibit only at adverse party's request"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Business Records",
+    back: [
+      "Record made at or near the time by someone with knowledge, or from information transmitted by someone with knowledge",
+      "Kept in course of regularly conducted business activity",
+      "Making the record was a regular practice of that activity",
+      "Foundation via custodian, other qualified witness, or self-authenticating certification",
+      "[flag: records made in anticipation of litigation fall outside the exception]"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Absence of Business Record",
+    back: [
+      "Evidence that a matter is not included admissible to prove nonoccurrence or nonexistence",
+      "Requires foundation that the record would normally contain the matter"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Public Records",
+    back: [
+      "Sets out office's activities, matters observed under legal duty (excluding law enforcement observations in criminal cases against defendant), or factual findings from legally authorized investigation (civil cases and against government in criminal)",
+      "Opponent may show lack of trustworthiness to exclude"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Absence of Public Record",
+    back: [
+      "Testimony or certification by public official that diligent search failed to disclose the record",
+      "Type of record that would regularly be kept",
+      "[flag: testimony/certification by public official; diligent search; type of record regularly kept]"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Learned Treatises",
+    back: [
+      "Established as reliable authority by expert testimony, admission, or judicial notice",
+      "Statement called to expert's attention on cross OR relied on by expert on direct",
+      "[flag: statement read into evidence; treatise itself is NOT admitted as exhibit]"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Judgment of Previous Conviction",
+    back: [
+      "Final judgment after trial or guilty plea (not nolo)",
+      "Felony (punishable by more than one year)",
+      "Offered to prove a fact essential to the judgment",
+      "In criminal cases, only usable against the defendant (not third parties, except for impeachment)",
+      "[flag: felony, essential fact, CONVICTION not acquittal, against the defendant]"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Reputation Concerning Character",
+    back: [
+      "Reputation among associates or in community concerning character",
+      "Also covers reputation concerning boundaries, general history of community, or personal/family history"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Ancient Documents / Property Records / Family History",
+    back: [
+      "Ancient documents: statement in document prepared before Jan 1, 1998, whose authenticity is established",
+      "Property records: statements in documents affecting an interest in property, if matter would be relevant to the purpose of the document",
+      "Family history: records of religious organizations, marriage/baptism/similar certificates, family Bibles"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "6th Amendment / Crawford Framework",
+    back: [
+      "Criminal defendant has right to confront witnesses against them",
+      "Testimonial hearsay inadmissible unless declarant unavailable AND defendant had prior opportunity to cross",
+      "Applies only in criminal cases and only against the criminal defendant"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Testimonial vs. Nontestimonial",
+    back: [
+      "Primary purpose test: was statement made primarily to establish or prove past events potentially relevant to later criminal prosecution",
+      "Statements to police during ongoing emergency = nontestimonial",
+      "Statements to police after emergency ended = testimonial",
+      "Business records and other non-investigative documents generally nontestimonial"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Forfeiture by Wrongdoing",
+    back: [
+      "Defendant forfeits Confrontation Clause objection if they engaged in wrongdoing intended to prevent the witness from testifying and it succeeded",
+      "Parallels FRE 804(b)(6)"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Judge's Role — Preliminary Questions of Fact (104(a))",
+    back: [
+      "Judge decides preliminary questions on witness qualification, existence of privilege, and admissibility of evidence",
+      "Not bound by rules of evidence (except privileges) in making these determinations",
+      "Preponderance standard"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Conditional Relevance (104(b))",
+    back: [
+      "When relevance depends on a fact, judge admits upon proof sufficient to support jury finding of that fact",
+      "Judge screens; jury actually decides the conditional fact"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Outside Presence of Jury",
+    back: [
+      "Required for hearings on confession admissibility",
+      "Required when criminal defendant testifies as witness on preliminary matter and requests it",
+      "When justice otherwise requires",
+      "[flag: confession admissibility, criminal D testifying as witness in the hearing, or when justice requires]"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Defendant Cross-Examination Scope at Preliminary Hearing vs. Trial",
+    back: [
+      "Preliminary admissibility hearing: cross limited to specific issue at hearing + credibility",
+      "At trial: subject matter of direct + credibility (611(b))",
+      "Testifying on a preliminary matter does not open D to cross on other case issues"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Preliminary Hearing Evidence Rules",
+    back: [
+      "Not bound by FRE — hearsay and otherwise inadmissible evidence may be considered",
+      "Exception: privilege rules still apply",
+      "[flag: not bound by FRE except privilege]"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Rule of Completeness (106)",
+    back: [
+      "When party introduces part of a writing or recorded statement, adverse party may require introduction of any other part or related writing/statement that in fairness should be considered contemporaneously",
+      "Relevance-driven; prevents misleading incompleteness"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Curative Admission",
+    back: [
+      "When inadmissible evidence has been improperly admitted, court may allow adverse party to introduce additional inadmissible evidence to rebut and cure prejudicial effect",
+      "Discretionary — not automatic"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Judicial Notice (201)",
+    back: [
+      "Court may take notice of adjudicative facts not subject to reasonable dispute because generally known within jurisdiction OR readily determinable from unquestionably accurate sources",
+      "Mandatory if party requests and supplies necessary info; otherwise permissive",
+      "[flag: criminal jury may reject; civil jury must accept]"
+    ]
+  },
+  {
+    subject: "Evidence",
+    front: "Presumptions (301)",
+    back: [
+      "Civil: presumption imposes burden of production on party against whom directed",
+      "Burden of persuasion does NOT shift; remains where it originally rested",
+      "State law governs effect of presumptions on state-law claims"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Federal Question",
+    back: [
+      "Original jurisdiction over civil actions arising under the Constitution, laws, or treaties of the United States",
+      "Federal issue must appear on the face of the plaintiff's well-pleaded complaint; federal defense insufficient",
+      "State/federal concurrent unless Congress makes federal exclusive"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Diversity",
+    back: [
+      "Requires complete diversity across the V + AIC exceeding $75,000 exclusive of interests and costs",
+      "Determined at time of filing; changes thereafter don't affect jurisdiction"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Diversity of Citizenship:",
+    back: [
+      "Individual: domicile (present + intent to remain indefinitely)",
+      "Corporation: state of incorporation AND state of principal place of business (nerve center)",
+      "Unincorporated association: every state where a member is domiciled"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "AIC aggregation:",
+    back: [
+      "Single P v. single D: aggregate all claims",
+      "Single P v. multiple Ds: only if jointly liable",
+      "Multiple Ps v. single D: only if common and undivided interest"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Minimal Diversity",
+    back: [
+      "Only one plaintiff diverse from one defendant",
+      "Statutory interpleader (§ 1335), CAFA class actions (>$5M, 100+ members), interstate mass torts (75+ deaths)"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Supplemental Jurisdiction",
+    back: [
+      "Allows for SMJ over additional claims sharing common nucleus of operative fact with claim in original jurisdiction, base claim needs fed SMJ",
+      "If base claim is diversity: no supplemental jurisdiction over claims by plaintiffs against parties joined under Rule 14, 19, 20, or 24, or by persons joined/intervening as plaintiffs under Rule 19 or 24",
+      "§ 1367(b) does NOT block claims by defendants (crossclaims, impleader by TPP)",
+      "Rule 20 plaintiff loophole (Exxon Mobil): sub-AIC plaintiffs added under Rule 20 get supplemental jurisdiction so long as complete diversity preserved"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Contamination Doctrine",
+    back: [
+      "Rule 20 joinder of a non-diverse plaintiff is procedurally permitted but destroys SMJ post-joinder",
+      "Rule 21 severance is the doctrinal cure",
+      "Sequencing: joinder happens → SMJ evaporates → severance restores"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Impleader SMJ",
+    back: [
+      "Original P v. D diversity preserved even if TPP/TPD share citizenship (TPP and TPD both defendants)",
+      "Impleader claim (D1 v. D2) requires its own SMJ basis, typically § 1367(a) supplemental",
+      "§ 1367(b) doesn't block because TPP is a defendant, not a plaintiff",
+      "Same applies if P tries to sue the TPD; need independent basis for SMJ"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Class Action SMJ",
+    back: [
+      "Fed Q or diversity",
+      "If diversity: only named rep citizenship counts + at least one class member must satisfy AIC",
+      "CAFA: minimal diversity, 100+ members, aggregated >$5M"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Removal",
+    back: [
+      "§ 1441: defendant may remove within 30 days of receipt of initial pleading (§ 1446(b)(1))",
+      "All named D’s must consent"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Removal Rules",
+    back: [
+      "Forum Defendant – diversity removal is barred if any D is a citizen of forum state",
+      "Later Served D – each D has own 30-day window, earlier served D can thus consent to later D removal even after earlier D’s own 30 days expired",
+      "Ascertainment – case not initially removable means that 30 days will run from receipt of pleading which makes removable ascertainable",
+      "One-Year Bar – doesn’t apply in Fed Q, but will serve as ultimate bar for removal in diversity cases"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Remand",
+    back: [
+      "remand for lack of SMJ (any time) or procedural defect (motion within 30 days of removal)",
+      "remand orders based on § 1447(c) are UNREVIEWABLE on appeal, even if erroneous",
+      "Exceptions to § 1447(d) bar: CAFA (§ 1453(c) — 10 days), civil rights (§ 1443), federal officer (§ 1442), FDIC",
+      "Remands NOT under § 1447(c) (§ 1367(c) discretionary, abstention, forum-selection) ARE reviewable"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Traditional Bases",
+    back: [
+      "Voluntary presence + service (tag): valid unless in state only to answer summons or brought by force/fraud",
+      "Domicile",
+      "Consent: express (contract, stipulation, appointed agent), implied (conduct), voluntary (appearance)"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Specific Jurisdiction — International Shoe",
+    back: [
+      "Minimum contacts: purposeful availment (foreseeability of being haled into forum)",
+      "Claim arises out of or relates to those contacts (relatedness)",
+      "Exercise reasonable under fair play and substantial justice",
+      "Reasonableness factors: burden on defendant, forum state's interest, plaintiff's interest in relief, interstate judicial efficiency, shared state policies"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "General Jurisdiction",
+    back: [
+      "Individual: domicile",
+      "Corporation: state of incorporation AND PPB (nerve center); \"essentially at home\" is empty set beyond these post-Daimler"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Effects Test (Calder)",
+    back: [
+      "Intentional tort + expressly aimed at forum + defendant knew brunt of harm would be felt in forum → specific PJ",
+      "Aiming is required; knowledge of victim's residence alone insufficient",
+      "Conduct occurring outside forum with only downstream harm to forum resident does NOT satisfy"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Stream of Commerce",
+    back: [
+      "Unsettled at Supreme Court; Asahi and Nicastro both fractured",
+      "O'Connor plurality \"stream of commerce plus\": placing goods in stream of commerce insufficient without additional targeting conduct",
+      "Brennan concurrence \"awareness\": knowledge that products reach forum through regular distribution sufficient",
+      "Themis rule: apply stream-of-commerce-plus for essays",
+      "Asahi fairness prong (8-1) IS binding; can defeat PJ even when contacts exist"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Long-Arm Statute",
+    back: [
+      "Federal court borrows forum state's long-arm for specific PJ over nonresidents",
+      "Analysis: (1) LAS authorizes + (2) exercise satisfies due process"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Rule 4(k) Alternative PJ Sources",
+    back: [
+      "4(k)(1)(A): borrows state law (default)",
+      "100 Mile Bulge Rule - PJ over TPDs joined under Rule 14 or required parties under Rule 19 if served within 100 miles of the courthouse; distance-only, no time component",
+      "4(k)(1)(C): nationwide service when federal statute authorizes (e.g., statutory interpleader)",
+      "4(k)(2): federal claim + defendant not subject to PJ in any state + minimum contacts with U.S. as a whole"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "In Rem / Quasi in Rem",
+    back: [
+      "True in rem: adjudicates rights of all persons in property",
+      "Quasi in rem: adjudicates rights of specific persons in property",
+      "Shaffer v. Heitner: minimum contacts analysis required even in rem/quasi in rem when claim doesn't relate to property",
+      "Notice under Mullane: publication insufficient when identity/address known or ascertainable through reasonable effort; personal service or equivalent required",
+      "Notice defect → set aside within 1 year"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "General Venue (§ 1391)",
+    back: [
+      "Judicial district where any D resides, if all Ds reside in the same state",
+      "Judicial district where substantial part of events/omissions occurred, or substantial part of property is located",
+      "Fallback: any judicial district where any D is subject to PJ",
+      "Business entity D = residency where subject to PJ; if P, then PPB"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Transfer of Venue",
+    back: [
+      "§ 1404(a) — original venue proper: transfer to (i) any district where action might have been brought OR (ii) any district to which all parties consented, for convenience of parties/witnesses and in interest of justice",
+      "§ 1406(a) — original venue improper: court must dismiss or transfer in the interest of justice",
+      "Forum Non Conveniens – this is a dismissal, not a transfer, when more convenient foreign or state forum exists",
+      "Forum-selection clauses: given \"controlling weight in all but the most exceptional cases\" (Atlantic Marine); enforcement is federal common law/statutory (§ 1404(a)), not state law",
+      "FSC operates through § 1404(a) consent prong"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Choice of Law After Transfer",
+    back: [
+      "§ 1404(a) convenience transfer → transferor's law applies (Van Dusen)",
+      "§ 1406(a) improper venue transfer → transferee's law applies",
+      "Forum-selection clause transfer → transferee's law applies (Atlantic Marine)"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Threshold: Preemption vs. Erie",
+    back: [
+      "Preemption operates before Erie; if valid federal substantive law preempts, federal applies via Supremacy Clause",
+      "Erie only reached in diversity cases where state-law claim survives preemption"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Federal Question Cases",
+    back: [
+      "Erie not implicated for federal claims; federal law governs substance and procedure",
+      "Erie DOES run on supplemental state-law claims"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Diversity Cases",
+    back: [
+      "State substantive law + federal procedural law",
+      "Klaxon: federal court applies conflict-of-laws rules of forum state (choice of law is substantive)",
+      "State Substantive: SOL, burden of proof, elements of claim/defense, damages calculation, evidentiary privileges, choice-of-law rules",
+      "State Procedural: Judicial notice, manner of jury trial, service of process"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "When Substance/Procedure Unclear — Hanna Framework",
+    back: [
+      "Federal Rule on point → REA validity test: (1) arguably procedural AND (2) doesn't abridge/enlarge/modify substantive rights → federal applies; if invalid → state applies",
+      "No Federal Rule on point → Hanna twin aims: (a) would federal practice encourage forum shopping? (b) would it cause inequitable administration? If yes to either → state law",
+      "Byrd balancing: countervailing federal policy interest may override even outcome-determinative state law"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Complaint Requirements (Rule 8)",
+    back: [
+      "Short and plain statement of SMJ basis, claim showing entitlement to relief, demand for judgment",
+      "Fraud/mistake: pleaded with particularity (Rule 9(b)",
+      "Special damages: pleaded with particularity"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Service of Process (Rule 4)",
+    back: [
+      "Must occur within 90 days of complaint filing",
+      "Methods on individual: follow forum state OR service-state rules; personal delivery; substitute at dwelling with resident of suitable age and discretion; delivery to appointed agent",
+      "\"Suitable age and discretion\" is functional/capacity test, not age of majority; teenagers typically qualify",
+      "Server must be 18+ AND non-party (Rule 4(c)(2))",
+      "Corporation: officer, managing agent, general agent, appointed agent, or state law",
+      "Waiver of service (Rule 4(d)): in writing; 30 days to return (60 abroad); waiver extends answer to 60 days from request sent (90 abroad); no waiver ≠ no service, but responder pays costs"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Answer",
+    back: [
+      "Timing – 21 days from service or 60 days from service waiver request sending, or 90 if service made abroad",
+      "Post-Rule 12 motion denial: 14 days after notice of court's decision",
+      "Must admit/deny each allegation or plead insufficient knowledge; failure to deny = admitted, EXCEPT allegations regarding damages amounts are not admitted by failure to deny – will only apply to those specific proceedings – not preclusion"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Affirmative Defenses Waived",
+    back: [
+      "waived if not pleaded: assumption of risk, contributory negligence, fraud, duress, release, SOF, SOL, and other enumerated defenses"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Rule 12 Motions",
+    back: [
+      "12(b)(1) lack of SMJ: never waived; raise any time",
+      "12(b)(2) lack of PJ, 12(b)(3) improper venue, 12(b)(4)/(5) insufficient process/service: waived if not raised in first pre-answer motion OR original answer OR amendment as of right (omnibus rule)",
+      "12(b)(6) failure to state a claim, 12(b)(7) failure to join required party: raise in any pleading, motion for judgment on pleadings, or at trial",
+      "12(b)(6) mechanics: exhibits considered; affidavits convert to summary judgment with both-parties evidence opportunity"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Reply",
+    back: [
+      "Only when court orders (21 days from order); otherwise plaintiff presumed to deny everything in answer"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Amendments (Rule 15)",
+    back: [
+      "As of right: within 21 days of serving pleading (if no responsive pleading required); within 21 days after service of answer or Rule 12(b) motion (if responsive required)",
+      "Otherwise: leave of court (freely given when justice requires) or written consent"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Amendments Relation back (Rule 15(c)):",
+    back: [
+      "New claim: same T/O as original pleading",
+      "New party: same T/O + new party received notice within 90 days of filing + new party knew or should have known suit would have been brought against them but for mistake"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Rule 11 Certification",
+    back: [
+      "Signature certifies: no improper purpose, warranted by law, factual support (or likely after discovery)",
+      "Sanctions: monetary sanctions require show-cause order; 21-day safe harbor for party-initiated motions"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Permissive Joinder (Rule 20)",
+    back: [
+      "Same TX or occurrence  (or series thereof) + common question of law or fact",
+      "SMJ over the whole action required; § 1367(a) may cure sub-AIC plaintiffs added under Rule 20 in diversity (but not non-diverse plaintiffs — contamination)"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Compulsory Joinder (Rule 19)",
+    back: [
+      "Is absent person required? (complete relief impossible, prejudice to absentee's interest, or risk of inconsistent obligations?",
+      "Is joinder feasible? (PJ, SMJ preserved, proper venue)",
+      "If not feasible, equity-and-good-conscience factors → proceed or dismiss (indispensable party)"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Intervention (Rule 24)",
+    back: [
+      "As of right: statute confers OR timely + interest in property/transaction + disposition may impair + interests not adequately represented",
+      "Permissive: statute confers conditional right OR common question of law/fact; considers undue delay/prejudice",
+      "SMJ required; no supplemental jurisdiction in diversity cases"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Interpleader",
+    back: [
+      "Rule interpleader (Rule 22): complete diversity + AIC > $75k, or Fed Q; traditional PJ/venue",
+      "Statutory interpleader (§ 1335): minimal diversity between claimants + AIC ≥ $500; nationwide service; venue where any claimant resides"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Counterclaims (Rule 13)",
+    back: [
+      "Compulsory (13(a)): arises from same T/O as opposing party's claim + doesn't require adding party over whom court lacks jurisdiction; supplemental jurisdiction attaches; waived if not asserted in ANSWER (not pre-answer motion)",
+      "Permissive (13(b)): any other counterclaim; needs independent SMJ basis",
+      "Rule 13(a) waiver only triggers when defendant files an answer; pre-answer motion doesn't trigger waiver"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Crossclaims (Rule 13(g))",
+    back: [
+      "Against coparty; same T/O as original action or counterclaim",
+      "Supplemental jurisdiction generally available (crossclaims not in § 1367(b) exclusion list)"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Impleader (Rule 14)",
+    back: [
+      "Third-party plaintiff (defending party) sues nonparty who may be liable to TPP for all or part of claim (derivative liability — indemnification, contribution)",
+      "Timing: no leave needed if TPP files third-party complaint within 14 days of serving original answer; leave required after",
+      "SMJ: original diversity preserved (TPP/TPD both defendants); impleader claim needs own basis, typically § 1367(a); § 1367(b) doesn't bar because TPP is a defendant",
+      "PJ: 100-mile bulge under Rule 4(k)(1)(B) available"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Class Actions (Rule 23)",
+    back: [
+      "Rule 23(a) prerequisites: numerosity (typically <20 not enough; 40+ enough), commonality, typicality, adequacy",
+      "Rule 23(b) type: (b)(1) prejudicial risk, (b)(2) injunctive/declaratory relief for class, (b)(3) common questions predominate + superiority",
+      "(b)(3) requires notice, opt-out rights",
+      "SMJ: diversity requires only named rep diversity + one member's AIC > $75k",
+      "CAFA: 100+ members, minimal diversity, aggregated > $5M",
+      "Settlement/dismissal (Rule 23(e)): court approval after hearing (fair, adequate, reasonable); notice to bound class members",
+      "Class certification appeal (Rule 23(f)): 14 days, discretionary, no auto-stay"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Scope (Rule 26(b)(1))",
+    back: [
+      "Nonprivileged matter, relevant to any claim or defense, proportional to needs of case",
+      "Admissibility not required for discoverability",
+      "Privilege: federal common law for Fed Q; state law for diversity"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Work Product (Rule 26(b)(3))",
+    back: [
+      "Documents/tangible things prepared in anticipation of litigation, protected unless substantial need + no substantial equivalent available without undue hardship",
+      "Attorney mental impressions, opinions, legal theories: absolute protection"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Experts",
+    back: [
+      "Testifying: reports discoverable; drafts and party-attorney communications protected except compensation and facts/data provided by attorney",
+      "Non-testifying: discovery only in exceptional circumstances"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Mandatory Disclosures",
+    back: [
+      "Initial (Rule 26(a)(1)): witnesses, documents, damages computation, insurance — within 14 days after Rule 26(f) conference",
+      "Expert (Rule 26(a)(2)): at least 90 days before trial",
+      "Pretrial (Rule 26(a)(3)): at least 30 days before trial"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Discovery Devices",
+    back: [
+      "Depositions: any party or nonparty (subpoena for nonparty); 10-deposition limit without leave",
+      "Interrogatories: parties only; 25 max; 30 days to respond",
+      "Requests for production: no limit; 30 days",
+      "Requests for admission: no limit; 30 days; deemed admitted if no response",
+      "Rule 36 admission conclusively binding IN CURRENT LAWSUIT ONLY; 36(b) explicitly forecloses use in any other proceeding",
+      "Physical/mental exam (Rule 35): condition in controversy + good cause + court order"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Rule 26(f) Conference",
+    back: [
+      "No discovery before conference (except in exempted proceedings)",
+      "At least 21 days before scheduling order due"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Sanctions",
+    back: [
+      "Motion to compel (Rule 37(a)); sanctions for noncompliance",
+      "Failure to preserve ESI with intent to deprive: adverse inference, dismissal, or default judgment"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "TRO (Rule 65(b))",
+    back: [
+      "May issue ex parte if: (a) specific facts in affidavit/verified complaint show immediate, irreparable injury before adverse party can be heard, AND (b) attorney certifies in writing efforts to give notice or reasons notice shouldn't be required",
+      "14 days maximum, extendable once for good cause or with consent",
+      "Adverse party may move to dissolve on 2 days' notice"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Preliminary Injunction (Rule 65(a))",
+    back: [
+      "Notice to adverse party required, categorically — no ex parte PIs, no exceptions",
+      "Winter four-factor test: (1) likelihood of success on merits, (2) irreparable harm absent relief, (3) balance of equities favors movant, (4) public interest",
+      "Conversion from TRO to PI requires notice to adverse party"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Permanent Injunction (eBay v. MercExchange)",
+    back: [
+      "Same four factors as PI but requires actual success on merits, not likelihood"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Rule 65(d) Contents and Scope",
+    back: [
+      "(d)(1): order must state reasons, terms specifically, and describe acts restrained in reasonable detail",
+      "(d)(2): binds parties, their officers/agents/servants/employees/attorneys, and persons in active concert or participation with the above who receive actual notice"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Voluntary Dismissal (Rule 41(a))",
+    back: [
+      "Plaintiff notice: before opposing party serves answer or SJ motion — without prejudice typically; two-dismissal rule bars refiling if plaintiff previously dismissed same claim",
+      "Stipulation: all appearing parties sign",
+      "Otherwise court order; discretion on with/without prejudice"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Involuntary Dismissal (Rule 41(b))",
+    back: [
+      "Defendant motion; failure to prosecute or comply with rules/order",
+      "Presumptively adjudication on merits (with prejudice) unless court says otherwise or dismissal for jurisdiction/venue/joinder"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Default (Rule 55)",
+    back: [
+      "Clerk enters default when defendant fails to plead or defend",
+      "May be set aside for good cause",
+      "Default judgment: sought after entry of default; entered by clerk if calculable"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Summary Judgment (Rule 56)",
+    back: [
+      "Standard: no genuine dispute of material fact + movant entitled to judgment as matter of law",
+      "Evidence viewed in light most favorable to nonmovant; all doubts resolved in nonmovant's favor",
+      "Timing: until 30 days after close of discovery",
+      "Burden-shifting: movant establishes; if met, nonmovant must show specific disputed facts (cannot rely on pleadings)"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Right to Jury Trial",
+    back: [
+      "7th Amendment: legal claims (damages) if AIC > $20; equitable claims (injunction, specific performance) no right",
+      "Mixed claims: legal issues tried first",
+      "Demand within 14 days of last pleading directed to the issue"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Jury Composition",
+    back: [
+      "6-12 jurors; parties may stipulate to fewer than 6",
+      "Once selected, juror must participate in verdict unless excused for good cause (illness, family emergency, misconduct)",
+      "No alternate jurors in federal court"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Jury Instructions",
+    back: [
+      "Objections must be on record and specific; failure to object generally waives appellate review",
+      "Timeliness: promptly after learning instruction will be given/refused",
+      "Unpreserved errors reviewed only for plain error"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Verdicts",
+    back: [
+      "Unanimous unless parties stipulate otherwise",
+      "Types: special (issue-by-issue findings), general (prevailing party + damages), general with special interrogatories",
+      "Polling: court must poll on request; if lack of unanimity → further deliberation or new trial at court discretion"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Bench Trial",
+    back: [
+      "Findings of fact + conclusions of law required",
+      "Findings of fact reviewed for clear error on appeal"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Judgment as a Matter of Law (Rule 50(a))",
+    back: [
+      "Made after nonmovant has been fully heard on an issue, before submission to jury",
+      "Standard: no legally sufficient evidentiary basis for reasonable jury to find for nonmovant",
+      "Court views evidence in light most favorable to nonmovant; does NOT weigh evidence or assess credibility"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Renewed JMOL (Rule 50(b))",
+    back: [
+      "Prerequisite: initial Rule 50(a) motion",
+      "Timing: within 28 days after entry of judgment or jury discharge",
+      "Grounds limited to those raised in initial motion",
+      "Court may: allow judgment on verdict, order new trial, or direct entry of JMOL"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Rule 59 — New Trial and Alter/Amend",
+    back: [
+      "new trial: trial-level defects requiring re-do (jury misconduct, prejudicial error, verdict against weight of evidence, damages that shock conscience); 28 days post judgment",
+      "alter or amend judgment: legal error correctable on existing record; four grounds — (1) manifest error of law or fact, (2) prevent manifest injustice, (3) newly discovered evidence, (4) intervening change in controlling law; 28 days post judgment"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Rule 60 — Relief From Judgment",
+    back: [
+      "60(a): clerical mistakes or oversights; correctable any time by court sua sponte or on motion; after appeal docketed, requires appellate court's leave",
+      "60(b) extraordinary relief: (1) mistake/inadvertence/surprise/excusable neglect, (2) newly discovered evidence not reasonably discoverable, (3) fraud/misrepresentation/misconduct — all within 1 year of judgment; (4) void judgment, (5) satisfied/released/discharged, (6) any other reason justifying relief — reasonable time"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Remittitur / Additur",
+    back: [
+      "Remittitur: federal courts may order (P accepts reduced damages or gets new trial)",
+      "Additur: unconstitutional in federal court under 7th Amendment; state courts split"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Final Judgment Rule (§ 1291)",
+    back: [
+      "Federal appellate jurisdiction over final decisions of district courts",
+      "Final = fully resolves dispute on merits, leaves nothing but enforcement"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Notice of Appeal (FRAP 4)",
+    back: [
+      "30 days from entry of final judgment; 60 days if US, federal agency, or federal officer/employee is party",
+      "Filed with district court clerk"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Interlocutory Appeals of Right (§ 1292(a))",
+    back: [
+      "In Certain Circumstances, An Appeal Can Be Made Prematurely",
+      "Injunction (grant/denial), Certification by District Court, Class Action Cert, Appointment of Receiver, Admiralty, Collateral-order Doctrine, Bankruptcy, Mandamus, Patent Infringement (only accounting left)",
+      "Certification by district court is not as of right!",
+      "Need certification sowing that immediate appeal will material advance termination of suit"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Collateral Order Doctrine (Cohen)",
+    back: [
+      "Conclusively determines disputed question + resolves important issue completely separate from merits + effectively unreviewable on appeal from final judgment"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Rule 54(b) Certification",
+    back: [
+      "Multi-claim or multi-party actions",
+      "Court expressly determines \"no just reason for delay\" + directs entry of judgment as final as to fewer than all claims/parties"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Class Certification (Rule 23(f)) Appeal",
+    back: [
+      "14 days; discretionary; no auto-stay during appeal"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Standards of Review",
+    back: [
+      "De novo: questions of law, 12(b)(6), summary judgment, JMOL rulings, jurisdictional rulings, choice of law",
+      "Clearly erroneous: bench trial factual findings",
+      "Reasonable jury / substantial evidence: jury verdicts",
+      "Abuse of discretion: evidentiary rulings, discovery, Rule 59 grants, remittitur, joinder/severance, class certification, preliminary injunctions, Rule 11 sanctions, § 1367(c) discretion, attorney's fees",
+      "Plain error: unpreserved issues",
+      "Harmless error overlay: no reversal if error didn't affect substantial rights"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Claim Preclusion (Res Judicata)",
+    back: [
+      "Same claim (transactional test — same T/O + could have been raised)",
+      "Same parties or privies (occupying same roles, except compulsory counterclaim violation)",
+      "Valid final judgment",
+      "On the merits (default and consent judgments count; jurisdictional/venue/joinder dismissals don't; Rule 41(b) generally counts; Rule 12(b)(6) generally counts)"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Issue Preclusion (Collateral Estoppel)",
+    back: [
+      "Same issue",
+      "Actually litigated (contested, not stipulated/defaulted/admitted; deemed admissions under Rule 36 fail this)",
+      "Necessarily decided / essential to judgment (counterfactual test: would judgment have come out the same without this finding?)",
+      "Valid final judgment",
+      "Party against whom preclusion asserted had full and fair opportunity"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Mutuality Framework",
+    back: [
+      "Target of preclusion must have been a party or privy in prior action (strict)",
+      "Asserter can be a stranger to prior action (mutuality abandoned)",
+      "Mutual: asserter was party to first action",
+      "Defensive non-mutual (Blonder-Tongue): new D asserts against same P — generally permitted",
+      "Offensive non-mutual (Parklane): new P asserts against same D — permitted subject to discretion"
+    ]
+  },
+  {
+    subject: "Civil Procedure",
+    front: "Parklane Factors for Offensive Non-Mutual",
+    back: [
+      "Could plaintiff have easily joined earlier action? (wait-and-see problem)",
+      "Was later suit foreseeable?",
+      "Prior inconsistent judgments?",
+      "Different procedural opportunities?"
+    ]
+  }
+];
+
+// ============================================================
+// SETUP: assign stable IDs from subject + front text
+// ============================================================
+function slugify(str) {
+  return str.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+const CARDS = RAW_CARDS.map(c => ({
+  ...c,
+  id: slugify(c.subject) + "--" + slugify(c.front)
+}));
+const CARDS_BY_ID = Object.fromEntries(CARDS.map(c => [c.id, c]));
+
+// ============================================================
+// PERSISTENCE (localStorage)
+// ============================================================
+const STORAGE = {
+  favKey: (subject) => "flashcards_fav_" + slugify(subject),
+  flagKey: "flashcards_flagged",
+  get(key) {
+    try { return JSON.parse(localStorage.getItem(key)) || []; }
+    catch { return []; }
+  },
+  set(key, val) {
+    try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
+  },
+  toggle(key, id) {
+    const arr = this.get(key);
+    const i = arr.indexOf(id);
+    if (i >= 0) arr.splice(i, 1); else arr.push(id);
+    this.set(key, arr);
+    return i < 0;
+  },
+  has(key, id) { return this.get(key).includes(id); }
+};
+
+function isFavorited(card) { return STORAGE.has(STORAGE.favKey(card.subject), card.id); }
+function isFlagged(card)   { return STORAGE.has(STORAGE.flagKey, card.id); }
+function toggleFavorite(card) { return STORAGE.toggle(STORAGE.favKey(card.subject), card.id); }
+function toggleFlag(card)     { return STORAGE.toggle(STORAGE.flagKey, card.id); }
+
+// ============================================================
+// DECK RETRIEVAL
+// ============================================================
+function cardsForSubject(subject) { return CARDS.filter(c => c.subject === subject); }
+function favoritesForSubject(subject) {
+  const ids = STORAGE.get(STORAGE.favKey(subject));
+  return ids.map(id => CARDS_BY_ID[id]).filter(Boolean);
+}
+function flaggedCards() {
+  const ids = STORAGE.get(STORAGE.flagKey);
+  return ids.map(id => CARDS_BY_ID[id]).filter(Boolean);
+}
+
+// ============================================================
+// STATE + RENDERING
+// ============================================================
+const state = {
+  view: "home",     // "home" | "subject" | "deck"
+  subject: null,
+  deckType: null,   // "main" | "favorites" | "flagged"
+  cards: [],
+  index: 0,
+  flipped: false
+};
+
+const app = document.getElementById("app");
+
+// Tiny DOM helper
+function h(tag, attrs, children) {
+  const el = document.createElement(tag);
+  if (attrs) {
+    for (const [k, v] of Object.entries(attrs)) {
+      if (v == null || v === false) continue;
+      if (k === "class") el.className = v;
+      else if (k === "onclick") el.addEventListener("click", v);
+      else if (k === "dataset") Object.assign(el.dataset, v);
+      else if (k === "disabled") { if (v) el.disabled = true; }
+      else if (k in el) el[k] = v;
+      else el.setAttribute(k, v);
+    }
+  }
+  if (children != null) {
+    for (const child of [].concat(children)) {
+      if (child == null || child === false) continue;
+      if (typeof child === "string" || typeof child === "number") {
+        el.appendChild(document.createTextNode(String(child)));
+      } else {
+        el.appendChild(child);
+      }
+    }
+  }
+  return el;
+}
+
+function clearApp() { app.innerHTML = ""; }
+
+function render() {
+  if (state.view === "home") renderHome();
+  else if (state.view === "subject") renderSubject();
+  else renderDeck();
+}
+
+// -------------------- HOME --------------------
+function renderHome() {
+  clearApp();
+  const screen = h("div", { class: "screen" });
+
+  screen.appendChild(h("h1", { class: "page-title" }, "Bar Prep"));
+  screen.appendChild(h("div", { class: "page-subtitle" }, "Tap a subject to study."));
+
+  screen.appendChild(h("div", { class: "section-label" }, "Subjects"));
+  const list = h("div", { class: "list" });
+  for (const subject of SUBJECTS) {
+    const count = cardsForSubject(subject).length;
+    const disabled = count === 0;
+    list.appendChild(h("button", {
+      class: "list-item" + (disabled ? " disabled" : ""),
+      onclick: disabled ? null : () => goToSubject(subject)
+    }, [
+      h("div", { class: "name" }, subject),
+      h("div", { class: "count" }, count + (count === 1 ? " card" : " cards"))
+    ]));
+  }
+  screen.appendChild(list);
+
+  const flaggedCount = flaggedCards().length;
+  screen.appendChild(h("div", { class: "section-label" }, "Flagged"));
+  const flaggedList = h("div", { class: "list" });
+  flaggedList.appendChild(h("button", {
+    class: "list-item" + (flaggedCount === 0 ? " disabled" : ""),
+    onclick: flaggedCount === 0 ? null : () => goToDeck(null, "flagged")
+  }, [
+    h("div", { class: "name" }, "All flagged cards"),
+    h("div", { class: "count" }, flaggedCount + (flaggedCount === 1 ? " card" : " cards"))
+  ]));
+  screen.appendChild(flaggedList);
+
+  app.appendChild(screen);
+}
+
+// -------------------- SUBJECT --------------------
+function renderSubject() {
+  clearApp();
+  const screen = h("div", { class: "screen" });
+
+  screen.appendChild(h("div", { class: "top-bar" }, [
+    h("div", { class: "left" }, [
+      h("button", { class: "link-btn", onclick: goHome }, "‹ Home")
+    ]),
+    h("h1", {}, state.subject),
+    h("div", { class: "right" })
+  ]));
+
+  const mainCount = cardsForSubject(state.subject).length;
+  const favCount = favoritesForSubject(state.subject).length;
+
+  const list = h("div", { class: "list" });
+  list.appendChild(h("button", {
+    class: "list-item" + (mainCount === 0 ? " disabled" : ""),
+    onclick: mainCount === 0 ? null : () => goToDeck(state.subject, "main")
+  }, [
+    h("div", { class: "name" }, "Full deck"),
+    h("div", { class: "count" }, mainCount + (mainCount === 1 ? " card" : " cards"))
+  ]));
+  list.appendChild(h("button", {
+    class: "list-item" + (favCount === 0 ? " disabled" : ""),
+    onclick: favCount === 0 ? null : () => goToDeck(state.subject, "favorites")
+  }, [
+    h("div", { class: "name" }, "Favorites"),
+    h("div", { class: "count" }, favCount + (favCount === 1 ? " card" : " cards"))
+  ]));
+  screen.appendChild(list);
+  app.appendChild(screen);
+}
+
+// -------------------- DECK / CARD --------------------
+function renderDeck() {
+  clearApp();
+  const screen = h("div", { class: "screen" });
+
+  const isFlaggedDeck = state.deckType === "flagged";
+  const backAction = isFlaggedDeck ? goHome : (() => goToSubject(state.subject));
+  const backLabel = isFlaggedDeck ? "‹ Home" : "‹ " + state.subject;
+  const heading = isFlaggedDeck
+    ? "Flagged"
+    : (state.deckType === "favorites" ? state.subject + " · Favorites" : state.subject);
+
+  const rightSlot = h("div", { class: "right" });
+  if (isFlaggedDeck && state.cards.length > 1) {
+    rightSlot.appendChild(h("button", { class: "link-btn", onclick: shuffleDeck }, "Shuffle"));
+  }
+
+  screen.appendChild(h("div", { class: "top-bar" }, [
+    h("div", { class: "left" }, [
+      h("button", { class: "link-btn", onclick: backAction }, backLabel)
+    ]),
+    h("h1", {}, heading),
+    rightSlot
+  ]));
+
+  if (state.cards.length === 0) {
+    const emptyMsg = isFlaggedDeck
+      ? "Flag a card from any deck and it will show up here, across all subjects."
+      : (state.deckType === "favorites"
+          ? "Star a card in this subject's Full deck and it will show up here."
+          : "No cards in this deck yet.");
+    screen.appendChild(h("div", { class: "empty" }, [
+      h("div", { class: "empty-title" }, "Nothing here yet"),
+      h("p", {}, emptyMsg)
+    ]));
+    app.appendChild(screen);
+    return;
+  }
+
+  const card = state.cards[state.index];
+  const fav = isFavorited(card);
+  const flg = isFlagged(card);
+
+  screen.appendChild(h("div", { class: "card-meta" }, [
+    isFlaggedDeck ? h("div", { class: "subject-tag" }, card.subject) : h("div", {}),
+    h("div", {}, (state.index + 1) + " / " + state.cards.length)
+  ]));
+
+  // Build the card faces
+  const front = h("div", { class: "card-face card-front" }, [
+    h("div", { class: "term" }, card.front),
+    h("div", { class: "flip-hint" }, "Tap to flip")
+  ]);
+  const backContent = h("div", { class: "back-content" });
+  for (const line of card.back) {
+    const item = h("div", { class: "back-item" });
+    item.innerHTML = renderInline(line);
+    backContent.appendChild(item);
+  }
+  const backFace = h("div", { class: "card-face card-back" }, [ backContent ]);
+
+  const cardEl = h("div", {
+    class: "card" + (state.flipped ? " flipped" : ""),
+    onclick: flipCard,
+    role: "button",
+    "aria-label": "Flashcard — tap to flip"
+  }, [ front, backFace ]);
+
+  screen.appendChild(h("div", { class: "card-wrap" }, [ cardEl ]));
+
+  screen.appendChild(h("div", { class: "action-bar" }, [
+    h("div", { class: "action-group" }, [
+      h("button", {
+        class: "icon-btn" + (fav ? " active" : ""),
+        dataset: { role: "star" },
+        onclick: (e) => { e.stopPropagation(); handleFavorite(); },
+        "aria-label": "Star card",
+        title: "Star (copy to this subject's Favorites)"
+      }, fav ? "★ Starred" : "☆ Star"),
+      h("button", {
+        class: "icon-btn" + (flg ? " active" : ""),
+        dataset: { role: "flag" },
+        onclick: (e) => { e.stopPropagation(); handleFlag(); },
+        "aria-label": "Flag card",
+        title: "Flag (copy to the global Flagged pile)"
+      }, flg ? "⚑ Flagged" : "⚐ Flag")
+    ]),
+    h("div", { class: "action-group" }, [
+      h("button", { class: "nav-btn", onclick: prevCard, disabled: state.index === 0 }, "Prev"),
+      h("button", { class: "nav-btn", onclick: nextCard, disabled: state.index >= state.cards.length - 1 }, "Next")
+    ])
+  ]));
+
+  app.appendChild(screen);
+}
+
+// Light inline formatting for back-of-card lines: **bold** and *italic*.
+// Everything else is escaped so raw HTML in card data can't break out.
+function renderInline(str) {
+  const esc = String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return esc
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/(^|[^*])\*([^*]+)\*(?!\*)/g, "$1<em>$2</em>");
+}
+
+// ============================================================
+// NAVIGATION + ACTIONS
+// ============================================================
+function goHome() {
+  Object.assign(state, { view: "home", subject: null, deckType: null, cards: [], index: 0, flipped: false });
+  render();
+}
+function goToSubject(subject) {
+  Object.assign(state, { view: "subject", subject });
+  render();
+}
+function goToDeck(subject, deckType) {
+  Object.assign(state, { view: "deck", subject, deckType, index: 0, flipped: false });
+  loadDeck();
+  render();
+}
+function loadDeck() {
+  if (state.deckType === "main") state.cards = cardsForSubject(state.subject);
+  else if (state.deckType === "favorites") state.cards = favoritesForSubject(state.subject);
+  else if (state.deckType === "flagged") state.cards = flaggedCards();
+}
+function flipCard() {
+  state.flipped = !state.flipped;
+  const c = document.querySelector(".card");
+  if (c) c.classList.toggle("flipped", state.flipped);
+}
+function prevCard() {
+  if (state.index > 0) { state.index--; state.flipped = false; render(); }
+}
+function nextCard() {
+  if (state.index < state.cards.length - 1) { state.index++; state.flipped = false; render(); }
+}
+function handleFavorite() {
+  const card = state.cards[state.index];
+  if (!card) return;
+  toggleFavorite(card);
+  if (state.deckType === "favorites") {
+    loadDeck();
+    if (state.index >= state.cards.length) state.index = Math.max(0, state.cards.length - 1);
+  }
+  render();
+}
+function handleFlag() {
+  const card = state.cards[state.index];
+  if (!card) return;
+  toggleFlag(card);
+  if (state.deckType === "flagged") {
+    loadDeck();
+    if (state.index >= state.cards.length) state.index = Math.max(0, state.cards.length - 1);
+  }
+  render();
+}
+function shuffleDeck() {
+  const arr = state.cards.slice();
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  state.cards = arr;
+  state.index = 0;
+  state.flipped = false;
+  render();
+}
+
+// ============================================================
+// INPUT: keyboard (desktop) and swipe (mobile)
+// ============================================================
+document.addEventListener("keydown", (e) => {
+  if (state.view !== "deck" || state.cards.length === 0) return;
+  if (e.key === "ArrowLeft") { e.preventDefault(); prevCard(); }
+  else if (e.key === "ArrowRight") { e.preventDefault(); nextCard(); }
+  else if (e.key === " " || e.key === "Enter") { e.preventDefault(); flipCard(); }
+});
+
+let touchStartX = null, touchStartY = null;
+document.addEventListener("touchstart", (e) => {
+  if (state.view !== "deck") return;
+  const t = e.touches[0];
+  touchStartX = t.clientX;
+  touchStartY = t.clientY;
+}, { passive: true });
+document.addEventListener("touchend", (e) => {
+  if (state.view !== "deck" || touchStartX === null) return;
+  const t = e.changedTouches[0];
+  const dx = t.clientX - touchStartX;
+  const dy = t.clientY - touchStartY;
+  touchStartX = null;
+  touchStartY = null;
+  // Only treat as swipe if horizontal motion dominates and exceeds threshold
+  if (Math.abs(dx) < 55 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+  if (dx < 0) nextCard(); else prevCard();
+}, { passive: true });
+
+// ============================================================
+// BOOT
+// ============================================================
+render();
+</script>
+</body>
+</html>
