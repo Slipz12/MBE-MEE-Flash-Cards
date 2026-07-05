@@ -356,7 +356,8 @@ const SUBJECTS = [
   "Contracts",
   "Torts",
   "Real Property",
-  "Criminal Law & Procedure",
+  "Criminal Law",
+  "Criminal Procedure",
   "Business Associations"
 ];
 
@@ -1826,6 +1827,1055 @@ const RAW_CARDS = [
       "Was later suit foreseeable?",
       "Prior inconsistent judgments?",
       "Different procedural opportunities?"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "SCT Jurisdiction",
+    back: [
+      "Original j/x typically limited to disputes between states – cannot be expanded by congress",
+      "Appellate j/x – congress can create exceptions to this, and SCT can’t hear if AISG exist"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Standing (three-element test)",
+    back: [
+      "Injury in fact – concrete (actual or imminent) and particularized (not common to all)",
+      "Causation – injury caused by D’s violation of the law",
+      "Redressability – relief requested of the court must be able to prevent or remedy the injury"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Organizational standing",
+    back: [
+      "Organization has standing if the members have standing to sue in their own right and the interests at stake are germane to the organization’s purpose"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Mootness rule",
+    back: [
+      "No controversy left to resolve between the parties – nothing left for court to fix",
+      "Exception where it is capable of repetition yet avoid review (gestational period for abortion type cases)"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Ripeness rule",
+    back: [
+      "Claim has not yet fully developed – injury has yet to become actual or imminent"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "11A sovereign immunity + abrogation exceptions",
+    back: [
+      "Generally cannot sue a state for money damages unless the state consent, or congress abrogates through enumerated power",
+      "Applies to protect state and state agencies, not local governments or individual state officers",
+      "Only applies to suit for money damages",
+      "Ex Parte Young – party can seek injunctive relief against state officers, but federal courts cannot enjoin state officers or state law clerks"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "11A Exceptions",
+    back: [
+      "Consent – state can consent to suit; US is allowed to bring suit against state",
+      "Implied Consent – actions brought by other state govs; bankruptcy proceedings with state financial impacts; federal condemnation proceedings; and actions by private parties if arising from statutes pursuant to Congress war power",
+      "Abrogation via reconstruction amendments"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Political Question",
+    back: [
+      "Non justiciable political question arises when constitution assigns decision making authority on a subject to a different branch of government",
+      "No law for the judge to apply – like congressional use of impeachment power or presidential right to negotiate a treaty"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Abstention",
+    back: [
+      "Federalism – respecting state courts – so, may abstain where strong state interests exist",
+      "Pullman – abstain where there is unsettled state law",
+      "Younger – abstain for pending state criminal cases",
+      "Burford – abstain where a party seeks injunctive relief that would interfere with a complex state regulatory scheme",
+      "Colorado River – abstain if case substantially similar to another case being heard in state court"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Commerce clause (three categories: channels, instrumentalities, substantial effect)",
+    back: [
+      "Congressional power is plenary, allowing for regulation over the channels and instrumentalities of interstate commerce",
+      "Also applies to in-state economic activity, that alone or in the aggregate, has a substantial effect on interstate commerce (rational basis)",
+      "Cannot COMPEL economic participation or regulate purely non-economic activity via commerce",
+      "CAN regulate non-economic activity if n&p for complex economic regulatory scheme"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Spending power (conditions test: related to purpose, non-coercive)",
+    back: [
+      "Generally permitted to spend for the general welfare",
+      "Can be used to incentivize behavior by the states through imposition of conditions, but",
+      "Conditions must not unconstitutional, must not be ambiguous or unrelated to the program, and cannot be so substantial as to be coercive"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Taxing power",
+    back: [
+      "Broad powers to tax, even to regulate behavior, so long as the tax is rationally related to revenue generation",
+      "Any purpose permitted, does not need to be necessary to compelling interest",
+      "Power to IMPOSE a tax is different than the TYPE OF TAX PERMITTED"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Delegation of legislative power (intelligible principle)",
+    back: [
+      "Legislative powers can be delegated to executive agencies and such so long as done with a intelligible, guiding principle",
+      "Once done, cannot thereafter install federal officials or veto specific agency action without going through the full legislative process",
+      "Cannot delegate exclusive legislative power like impeachment or way"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "General Presidential Powers",
+    back: [
+      "Enforce law, but not make it",
+      "Authority over administrative agencies that enforce law (done via executive order – how to enforce it), but cannot do this in excess of congressional statutory mandate",
+      "Pardon – forgive federal crimes once committed – can be given to a group – but cannot apply to impeachment"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Veto Power",
+    back: [
+      "Power to veto or approve legislation within 10 days;",
+      "No reason necessary; supermajority (2/3) of congress can override",
+      "Cannot just veto part of it"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Appointment Power",
+    back: [
+      "Authorized to appoint all officers of the US with advice and consent of SENATE",
+      "Required only fed employees exercising SIGNIFICANT authority on behalf of the US – not applicable to inferior employees",
+      "Congress creates the office – Executive appoints the officer"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Treaty",
+    back: [
+      "Can negotiate treaties but need supermajority approval of Senate to be enforced as law",
+      "Cannot conflict with constitution – constitution will win",
+      "Executive agreements are similar, but are not necessarily law and will not bind successors like treaties – do NOT require senate approval"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "State Taxation of Federal Government",
+    back: [
+      "Cannot directly tax fed",
+      "Can tax income of federal employees, or can tax in a way that it applies uniformly to agents of the federal government (sales tax on gov contractor is fine)"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Supremacy clause",
+    back: [
+      "Valid, federal law (and treaty) is the supreme law of the land and will take priority over conflicting state law"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Express preemption",
+    back: [
+      "Text of valid federal statute expressly preempts state law on the same subject",
+      "Rare"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Implied preemption (three types: field, direct conflict, indirect conflict)",
+    back: [
+      "Field – federal regulation is so pervasive that it has “occupied the field” such that there is no room left for states to legislate without being preempted",
+      "Direct – where state statute is in DIRECT conflict with valid federal statute such that you cannot comply with both",
+      "Indirect – where it is theoretically possible to comply with both federal and state statute, but compliance with both would frustrate the purpose of federal statute (cig labels example is best)"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "10th Amendment / anti-commandeering",
+    back: [
+      "Congress cannot force the states to enforce federal regulations by commandeering state officials"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Dormant Commerce Clause",
+    back: [
+      "Limitation on state ability to regulate economic activity",
+      "Implicated where state regulation disadvantages another state or its citizens and Congress is silent (dormant)"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "DCC — discrimination test (important state interest + no non-discriminatory alternative)",
+    back: [
+      "State or local law that protects local economic interest at the expense of out of-state competitors",
+      "Permissible only if it is NECESSARY to serve an IMPORANT state interest (could not be done by other means), or",
+      "The state is acting as a market participant, or",
+      "Congress has AUTHROIZED it"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "DCC — undue burden balancing test",
+    back: [
+      "If there is NO DISCRIMINATORY ACTION, state law may still be invalidated IF",
+      "Burdens imposed on interstate commerce clearly outweigh the local benefits (Pike Balancing)"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "DCC – Extraterritoriality",
+    back: [
+      "If a state law purposefully regulates wholly out of state conduct, it violates DCC"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "DCC — Exceptions",
+    back: [
+      "Traditioanl Gov Function – may favor state and local government entities, though not local PRIVATE entities, even where a private entity serves a gov function",
+      "Subsidy – may favor in-state citizens via subsidy, like lower tuition"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "State Taxation of Interstate Commerce",
+    back: [
+      "Only allowed where Congress has not acted and the tax does not discriminate or unduly burden interstate commerce",
+      "Requires substantial nexus between activity and state; fairly apportioned by rational formula; nondiscriminatory facially and in effect; fairly related to the services provided by taxing state"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "State Taxation – Other Restrictions",
+    back: [
+      "Ad Valorem – tax on value of specific property at specific time – is okay but cannot be a levy on goods in transit throughout the state",
+      "Sales, use, and doing business taxes are okay if fairly apportioned"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Private Actor – Traditional Public Function",
+    back: [
+      "When a private person or company carries out activities traditionally performed exclusively by state, they qualify as state actor",
+      "Need to be more than providing a product or service that the government normally provides – think, company town – they do everything"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Private Actor – Entanglement",
+    back: [
+      "State action exists if there are mutually beneficial contacts between conduct of the private party and the state – so intertwined that its hard to see the difference",
+      "Just having a license is not enough"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "State Facilitation of Private Action",
+    back: [
+      "State has facilitated or endorsed private behavior, affirmatively, not just passively"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Takings Generally",
+    back: [
+      "Require government action + private property + public use + just compensation",
+      "Rationally related to any conceivable public purpose",
+      "Just must pay FMV at time of taking"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Regulatory taking",
+    back: [
+      "Governmental rule that adversely affects private property such that it amounts to a taking",
+      "Looks at – gravity of the economic impact, extent to which it interferes with the owner’s reasonable investment-backed expectations, and benefit of the regulation"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Zoning ordinance validity (rationally related to legitimate purpose)",
+    back: [
+      "Government mere regulation is not a taking"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Procedural DP",
+    back: [
+      "Is there a protected interest threatened, and if so, what process is due?",
+      "Applies to life interests – death penalty",
+      "Liberty interests – freedom from confinement, restriction of fundamental rights (free speech, loss of parental rights, etc.), but not reputational damage",
+      "Property Interests – requires legitimate claim of entitlement to the property interest by virtue of statute, contract, or custom",
+      "Requires more than expectation of employment or benefit – “for cause”",
+      "And deprivation must be intentional"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Procedural DP — required process (notice, hearing, neutral decision-maker, appeal)",
+    back: [
+      "If protected, need notice of the action by unbiased decision maker, and",
+      "Opportunity to be heard",
+      "Notice must be reasonable",
+      "Often requires pre-deprivation hearing – like public employee fireable only for cause (unless significant reason to circumvent)"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Procedural DP — Mathews balancing (three factors)",
+    back: [
+      "Individual interest at stake",
+      "Value of procedure that protects that interest, and",
+      "Governmental interest in efficiency"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "SDP — fundamental rights list (life, liberty, property, voting, travel, privacy)",
+    back: [
+      "Right to travel from state to state, or settle somewhere else, but subject to reasonable residency restrictions for in state benefits",
+      "Right to Vote – fundamental – not allowed to have poll taxes, but may residency requirements or state restrictions as to felons; ID requirement no issue",
+      "Right to Privacy – includes marriage (same-sex + interracial); contraception; intimate association; read pornography inside the home; Parental rights (choose private or public school, and live with the kids absent abuse/neglect); NOT ABORTION",
+      "Right to Bear Arms – deeply rooted + fundamental – fundemtnal right subject to restrictions"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Discriminatory intent vs. disparate impact rule",
+    back: [
+      "Implicated not based on disparate impact – need to have actual animus in the rule",
+      "Can be shown facially, through history, OR AS APPLIED (but needs to be dramatic)"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Citizenship",
+    back: [
+      "Note that State laws versus citizenship = strict scrutiny",
+      "But congress has plenary authority over noncitizens, so likely valid"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Strict scrutiny",
+    back: [
+      "Applies to discrimination based on race, ethnicity, national origin, or where there is a restriction of a fundamental right (suspect classes)",
+      "Burden is on GOV to show that it’s necessary (least restrictive) to achieve a compelling interest"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Intermediate scrutiny (substantially related + important interest) — triggers: gender, non-marital children",
+    back: [
+      "Applies to discrimination based on gender and marital status (quasi-suspect)",
+      "Gov must show that it’s substantially related to an important governmental interest",
+      "If gender is involved – gov need to show an EXCEEDINLY persuasive justification"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Rational basis (rationally related + legitimate interest) — triggers: age, wealth, all others",
+    back: [
+      "Low threshold – must show that action is rationally related to a legitimate government interest",
+      "Technically applies to ALL gov action, but is practically applied when another standard does not apply – non-suspect class"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Overbreadth & Vagueness",
+    back: [
+      "Overbroad - Burdens more speech than necessary for government to achieve interest",
+      "Vagueness - Ambiguous to such an extent that no clear notice is given to person of ordinary intelligence about what speech is prohibited",
+      "Both are unconstitutional"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Prior restraint requirements",
+    back: [
+      "Attempt to restrict speech before it is made via injunction or similar – likely unconstitutional"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Right not to speak",
+    back: [
+      "There is a right NOT to speak or otherwise exhibit expressive conduct (right not to stand for the pledge)"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Content-based (strict scrutiny)",
+    back: [
+      "Generally trigger strict scrutiny",
+      "Viewpoint Based = restriction or endorsement of speech based upon idea express = per se unconst",
+      "Simply content based = strict scrutiny, subject to exceptions"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Content-neutral",
+    back: [
+      "Time place and manner restrictions – scrutiny depends on the forum"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Conduct Based Restriction",
+    back: [
+      "Generally can regulate expressive conduct if it further important interest, unrelated to expression, and restriction is no greater than necessary"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Commercial speech (three-prong test)",
+    back: [
+      "Gets intermediate level of protection, and must be lawful – so won’t apply if fraudulent or misleading",
+      "Asserted gov interest must be substantial, the regulation must directly advance that interest, and the regulation must be narrowly related to serve that interest"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Obscenity (three-prong Miller test)",
+    back: [
+      "Must be erotic (appeal to prurient interest)",
+      "Patently offensive to the average person in society",
+      "Must be defined with precise standards",
+      "Must not have serious artistic, scientific, or educational value",
+      "Child Porn = totally unprotected"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Incitement to violence (Brandenburg two-prong)",
+    back: [
+      "Restricted speech must be directed to inciting or producing imminent unlawful behavior, and",
+      "Likely to incite such behavior"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Fighting words",
+    back: [
+      "Allowed to restrict speech that is likely to incite an immediate breach of the peace or threatening of violence, need genuine likelihood though",
+      "More than just annoying or offensive"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Traditional public forum",
+    back: [
+      "May restrict speech here if: neutral on face AND as applied",
+      "Leaves open alternative channels of communication,",
+      "And narrowly served a significant – NOT COMPELLING – state interest"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Designated public forum (same as traditional)",
+    back: [
+      "Place that gov has opened for free speech activities, even if not traditional open (like a civics auditorium)",
+      "Same as traditional rule"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Non-public forum",
+    back: [
+      "Restriction only needs to be viewpoint neutral, not content neutral",
+      "And only need to be reasonably related to legitimate gov interest",
+      "Applies to GOV property that reasonable observer would think is not open to public"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Freedom of Association",
+    back: [
+      "Cannot be punished or disadvantaged by way of political association",
+      "Can’t require groups to accept leaders, or take loyalty oaths of gov employees (except to uphold constitution)"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Freedom of Association Mere Membership",
+    back: [
+      "Cannot criminalize mere membership unless group is actively engaged in unlawful activity, or actively inciting imminent violence AND",
+      "Individual in question is aware of this"
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Establishment clause rule",
+    back: [
+      "Applies where government prefers one religion over another, or over non religion",
+      "Looks at country’s historical practice and understanding about role of religion in everyday life",
+      "Focus is on gov conduct that is coercive as to religion; can provide benefits but must be generally applicable; can allow for education, but must be literature/educational focused; etc."
+    ]
+  },
+  {
+    subject: "Constitutional Law",
+    front: "Free exercise",
+    back: [
+      "Protects freedom to believe in any religion or no religion, and freedom to act accordingly",
+      "Law that purposely targets religious conduct = strict scrutiny",
+      "General applicable laws that are neutral and incidentally impact religious conduct = rational basis"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Constitutional hook (4A applicable to states via 14A DP)",
+    back: [
+      "All essays start with the hook – 4A applicable direct to Fed, or through the states under 14A"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Government Action",
+    back: [
+      "Applies only to gov action",
+      "May apply to action by private person if acting as an agent of the government"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Standing/REOP",
+    back: [
+      "Individual must have a REOP as the places searched or items seized for a 4A violation to occur"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Seizure of Persons",
+    back: [
+      "Can be made by force, or via show of authority, such that a person’s freedom of movement is restrained",
+      "Test is whether a reasonable person would feel free to leave"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Seizure – Arrest",
+    back: [
+      "Generally need a warrant",
+      "May be allowed warrantless if there is PC to believe felony has been committed",
+      "Cannot generally use a warrant for someone’s arrest to enter the home of a 3P"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Seizure – Terry",
+    back: [
+      "Valid to stop (& frisk) based upon reasonable suspicion that criminal activity is afoot"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Seizure – Police Checkpoint",
+    back: [
+      "Valid if done in a nondiscriminatory manner and there is an automobile related reason for the checkpoint",
+      "May be done for information purposes only"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Seizure – Traffic Stop",
+    back: [
+      "Valid where this is RS or PC that a traffic law has been violated",
+      "As a threshold, these are NON CUSTODIAL, even where driver is ordered out"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Search",
+    back: [
+      "Violation of REOP = search, generally needs a valid warrant OR",
+      "A warrant exception – probable cause + exigent circumstance"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Valid Warrant",
+    back: [
+      "Valid warrant = constitutional search, requires that it be",
+      "Issued by neutral and detached magistrate, based upon PC, and describe with particularity the places to be searched and items to be seized",
+      "PC can be based upon information received from a known and reliable informant",
+      "May be anticipatory or conditional",
+      "Scope is limited in that a person on premises cannot be searched absent independent justifications"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Warrant Execution",
+    back: [
+      "Must Knock and Announce presence – but failure is not fatal to seizure of evidence",
+      "Execution in GF of defective warrant is not a violation"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "REOP Notes",
+    back: [
+      "Overnight guests generally have a reop in the home, but beaten by homeowner consent",
+      "REOP exists in hotel/motel rooms",
+      "Vehicles have reduced REOP",
+      "No REOP in your prison cell"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Open Fields vs. Curtilage",
+    back: [
+      "Curtilage is the area around the home that has a REOP – look at proximity to the home, whether its enclosed, nature of the use of the area, and steps taken to shield from observation",
+      "Open Fields is everything that is not curtilage, even with no trespassing signs and such"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Terry stop + frisk",
+    back: [
+      "RS for stop; RS of armed and dangerous for frisk",
+      "Plain feel doctrine",
+      "Automobile frisk (Long)"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Search incident to lawful arrest (Chimel)",
+    back: [
+      "Pursuant to lawful arrest, may search person arrested and their immediate surrounding area for weapons or evidence",
+      "Also includes a protective sweet FOR PEOPLE if arrested inside a home",
+      "Post-emergency scope limits"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "SIA for vehicles (Gant two-prong)",
+    back: [
+      "May search within passenger compartment for evidence that is unsecured or within reaching distance",
+      "Once removed from vehicle, may search if there is reasonable belief of evidence of the crime of arrest in the vehicle"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Automobile exception",
+    back: [
+      "PC that vehicle contains contraband/evidence",
+      "Scope: any part vehicle where item could be, including containers therein"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Plain view",
+    back: [
+      "Lawful presence",
+      "Lawful access to object",
+      "Incriminating nature immediately apparent"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Exigent circumstances",
+    back: [
+      "Hot pursuit",
+      "Destruction of evidence",
+      "Emergency aid / public safety",
+      "Protective sweep (post-arrest, limited)"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Consent",
+    back: [
+      "Must be voluntary, but does not need to knowing",
+      "Can be limited in scope",
+      "Consent may be given by those with apparent authority as to the place to be searched – actual is irrelevant",
+      "A co-occupant is present can refuse the search and defeat consent"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Special needs / administrative",
+    back: [
+      "School searches - reasonable suspicion",
+      "Border searches – are allowed"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Exclusionary rule",
+    back: [
+      "4A Violations will exclude evidence obtained therefrom, and will extend via the fruit of the poisonous tree",
+      "To other evidence obtained as a result of the violation",
+      "May still be used for impeachment purposes and won’t apply in grand jury or sentencing proceedings"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Inevitable Discovery Rule",
+    back: [
+      "Wont exclude evidence if prosecution proves that evidence would have been inevitably discovered lawfuly"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Independent Source Rule",
+    back: [
+      "Wont exclude evidence if discovered in part by independent source unrelated ot the tainted evidence"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Attenuation Rule",
+    back: [
+      "Chain of causation between the primary taint and the evidence has been so attenuated as to “purge” the taint – time and intervening events both relevant"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Good Faith Exception",
+    back: [
+      "GF exception applies to police officers who act in GF on a facially valid warrant later found invalid or on a law later invalidated",
+      "Impeachment use of illegally obtained evidence",
+      "Non-application: grand jury (Calandra), civil, sentencing"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "5A Generally",
+    back: [
+      "Provides that no person shall be compelled in a criminal case to testify against themselves",
+      "Right against self-incrimination, applying to testimonial evidence obtained in the coercive setting of a custodial interrogation"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Miranda Warnings",
+    back: [
+      "Must give miranda warnings prior to any custodial interrogation",
+      "Need to be in custody, and being interrogated",
+      "No specific language is required, but must inform of right to remain silent, right to consult attorney, right to have attorney appointed, and that statements may be used"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Custodial",
+    back: [
+      "Test is whether a reasonable person would feel free to leave",
+      "Look for degrees of restraint similar to arrest; traffic stops presumptively not enough",
+      "Detention can escalate to custody – look for time, showing of force, etc."
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Interrogation",
+    back: [
+      "Refers to words or conduct that police know, or should know, are likely to elicit an incriminating response",
+      "Note that if D does not know that an informant is a cop/similar, miranda will not apply as its not coercive"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Miranda Waiver",
+    back: [
+      "Waiver must be knowing and voluntary",
+      "Silence is not enough to invoke, or waive, Miranda",
+      "Need an affirmative statement",
+      "Statements made voluntarily after receiving miranda warnings are admisisble"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Invoking rights",
+    back: [
+      "Right to counsel — unambiguous requirement (Davis — \"maybe I need a lawyer\" insufficient)",
+      "Right to silence — unambiguous requirement",
+      "Once invoked – questioning MUST cease",
+      "Reapproaching after invocation – 14 day break is presumptive, need fresh warnings",
+      "Not offense-specific, applies to all line of questioning"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Second confession doctrine",
+    back: [
+      "Isolated Miranda violation → not automatic violation for subsequent Mirandized statement",
+      "Deliberate question-first strategy → suppression",
+      "Break in time/place/circumstances as curative, look for GF mistake"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Exclusion of Miranda Statements",
+    back: [
+      "If voluntary, not protected",
+      "Involuntary, inadmissible for ANY purpose",
+      "Second Confession – where a confession obtained in violation of Miranda occurs, then later rights are given and the defendant waives and confesses again – may be okay if GF",
+      "Voluntary statement given in violation of miranda may be used for impeachment purposes, but not substantive",
+      "Physical fruits of a voluntary confession are admissible, even if given without miranda"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Voluntariness (separate from Miranda)",
+    back: [
+      "Totality standard",
+      "Colorado v. Connelly (state action required)",
+      "Impeachment use of voluntary Miranda-violative statement (Harris)",
+      "Physical fruits of voluntary Miranda-violative statement admissible (Patane)"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "6A Generally",
+    back: [
+      "Automatically attaches to critical stages and requires that a criminal defendant have representation of counsel for their defense",
+      "Applies unless it is waived knowingly and intelligently",
+      "Must be affirmatively invoked, not wishy-washy",
+      "IS OFFENSE SPECIFIC – only applies to the crime charged",
+      "Applies even in noncustodial situations"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "6A Applies To:",
+    back: [
+      "All felony prosecutions and any misdemeanor prosecution if jail time is imposed",
+      "Applies to critical stages – evidentiary hearings, post-indictment lineup, post-indictment interrogation, and any part of trial process like guilty pleas and sentencing",
+      "Noncritical – pre-indictment investigative lineups, witnesses looking at photo arrays, and discretionary appeals or post-conviction proceedings"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Right to counsel of choice for non-indigent",
+    back: [
+      "Not absolute",
+      "Erroneous denial = structural error that results in automatic reversal"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Right to self-representation",
+    back: [
+      "Knowing + voluntary + intelligent waiver",
+      "Must be competent to waive"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Ineffective assistance of Counsel",
+    back: [
+      "Seen via Deficient performance that Prejudiced the defendant",
+      "Reasonable strategic decisions not IAC"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Probation revocation counsel (two-track)",
+    back: [
+      "DP right (Gagnon) — if probationer contests violation or asserts complex mitigation",
+      "6A right (Mempa) — if sentence not yet imposed and will be imposed on revocation"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Types of Identification Procedures",
+    back: [
+      "Photo-Arrays – neither D or lawyer have right to be present but D must see the array",
+      "Lineups – if pre-indictment, non-critical; if post-indictment, then critical"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Impermissibly Suggestive",
+    back: [
+      "If move to exclude lineup evidence, the standard is whether it was impermissible suggestive or provided substantial likelihood of misidentification",
+      "Must have been reliable",
+      "Can be cured by clear and convincing evidence that witness would have ID’d even without the suggestive lineup"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Grand jury",
+    back: [
+      "5A federal indictment right (not incorporated — Hurtado)",
+      "Secrecy of proceedings",
+      "No right for target/witness to counsel in room",
+      "Witness may consult counsel outside",
+      "Evidence rules do not apply - Hearsay admissible - Illegally obtained evidence admissible (Calandra)",
+      "No duty to present exculpatory evidence (Williams)",
+      "No right for defendant to present witnesses or confront",
+      "No right to a target warning",
+      "Perjury conviction survives lack of warning",
+      "EP challenge for discriminatory impaneling → automatic reversal (no harmless error)"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Burden of proof (14A DP — Winship)",
+    back: [
+      "BARD as to every element",
+      "Mandatory presumptions (conclusive + rebuttable) violate DP as abrogating need for prosecution to prove case",
+      "Permissive inferences permissible",
+      "Affirmative defenses — states may allocate burden to the defense here",
+      "Defense negating an element — burden stays on prosecution"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Right to jury trial (6A)",
+    back: [
+      "6 months maximum for individual offense (aggregate irrelevant) gives right to jury trial",
+      "Impartial jury / cross-section",
+      "Death qualification – jurors must be capable of imposing death penalty",
+      "Verdict must be unanimous"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Confrontation Clause (6A — Crawford)",
+    back: [
+      "Statement that is testimonial (made under circumstances leading reasonable person to believe it would be used at a later trial) is barred if the declarant is unavailable and the D had no prior opp to cross-examine.",
+      "Only at trial – not applicable to grand jury, civil cases, or sentencing."
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Right to testify / right not to testify",
+    back: [
+      "You can refuse to testify, and you have a right to testify",
+      "Refusal to testify cannot be commented upon by prosecution"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Speedy trial (6A — Barker factors)",
+    back: [
+      "Can be injured for an unnecessarily delayed trial; comes from DP and Speedy trial clause of 6A",
+      "Consider length of delay, reason for delay, whether D asserts right to speedy trial, and the risk of prejudice to the D"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Sentencing Guidelines",
+    back: [
+      "Any facts, other than a statutory coinviction, which will be used ot increase sentence beyond statutory maximum must be charged to Jury and proved BARD",
+      "Confrontation Clause does not apply at sentencing",
+      "Sentencing IS a critical stage – 6A R2C attachesRight to counsel at sentencing (Mempa)"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "8A proportionality",
+    back: [
+      "Non-capital cases — extremely deferential (Ewing)",
+      "No death penalty if – under at 18 commission, intellectually disabled, non-homicide against individual, and/or insane at time of execution",
+      "Felony murder is grounds for death penalty, may extend to accomplice if major participant"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Juvenile Life without Parole",
+    back: [
+      "Not allowed if not for homicide",
+      "Mandatory LWOP is also barred, even if homicide – only allowed at discretion"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Double Jeopary Generally",
+    back: [
+      "Provides protections against prosecution for same offense after acquittal, prosecution for same offense after conviction, and multiple punishment for the same offense",
+      "Jeopardy must attach – in a jury trial, after jury empaneled and sworn; in a bench trial, after first witness is sworn",
+      "Does not apply to grand jury"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Same Offense Test",
+    back: [
+      "Each crime must require proof of an element that the other does not for them to be considered a separate offense",
+      "Likewise, cannot be prosecuted multiple times for greater and lesser included offenses, but can do this in the SAME ACTION",
+      "Different victims are separate offenses",
+      "Dual sovereignty will allow for both to charge"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Mistrial",
+    back: [
+      "Mistrial may implicate double jeopardy",
+      "Manifest necessity (hung jury, illness, misconduct) → no bar, D can be retried without 2x jeopardy issue",
+      "No manifest necessity – cannot be retried"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Inconsistent verdicts (Dunn / Powell)",
+    back: [
+      "Guilty verdict on one count cannot be challenged as inconsistent with acquittal on another count from same jury – courts don’t unpack jury basis",
+      "Post funalization inconsistency – no judicial intervention",
+      "Pre finalization of verdict inconsistency – judge can order re-deliberation or retrial"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Guilty pleas",
+    back: [
+      "Must be knowing, voluntary, and intelligent",
+      "Waives 5A self incrimination, 6A jury trial, and 6A confrontation rights",
+      "Need to understand nature of charge, elements, maximum sentence, minimum, and deportation exposure",
+      "But no duty to disclose the collateral consequences – parole eligibility, registration, or impact to professional licensing",
+      "May be withdrawn pre-sentence if fair and just, only post-sentencing for manifest injustice"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Right to separate trial from codefendant (Bruton)",
+    back: [
+      "In joint trial, admission of non-testifying codef confession that inculpates D violates confrontation clause and cannot cure with limiting instruction",
+      "Remedies are to sever and try separately, redact by removing all ref to codef, or to have the codef testify"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Insanity defense",
+    back: [
+      "States free to define / narrow / eliminate (Kahler majority)",
+      "Open question re: total elimination (Kahler dissent)"
+    ]
+  },
+  {
+    subject: "Criminal Procedure",
+    front: "Right to discharge / substitute counsel",
+    back: [
+      "6A right to counsel of choice for non indigents",
+      "Substitution for indigent requires good cause, like irreconcilable conflict, complete breakdown in comms, or actual conflict. Not just difference in personality.",
+      "Need to be timely.",
+      "If denied substitution, D may still opt to self-represent",
+      "Cannot be both pro se and counseled; one or the other"
     ]
   }
 ];
